@@ -1,0 +1,18 @@
+To select a difficulty, use the mouse on the options,
+or press the '1' or '2' key to select that difficulty.
+
+To move the paddle back and forth, use the 'a' and 'd' keys or
+move the mouse side to side while in the window.
+
+To reset the game, use the 'r' key. Resetting the game will reposition
+the paddle and ball, and reset the score.
+
+To exit, either click on the red X in the top right of the screen,
+or press the 'z' key.
+
+You may notice the paddle is repositioned throughout the game, sometimes
+there is an error which would crash the game and make you lose your score.
+Repositioning the paddle prevents this fatal crash from happening and saves
+your progress.
+
+Moving the window while in-game may mess up the mouse controls.
