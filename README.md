@@ -23,7 +23,7 @@ the paddle and ball, and reset the score.
 * To exit, either click on the red X in the top right of the screen,
 or press the 'z' key.
 
-* YThe paddle may be repositioned throughout the game, sometimes the paddle overrides the ball so the position of
+* The paddle may be repositioned throughout the game, sometimes the paddle overrides the ball so the position of
 the ball and paddle are reset when this happens to prevent errors.
 
 * Moving the window while in-game may mess up the mouse controls.
