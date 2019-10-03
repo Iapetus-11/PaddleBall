@@ -9,6 +9,7 @@ PaddleBall is a game by Olim One Studios written in Java.
 * go back to menu button or key
 * add help page on menu
 * add obstacles / make it more like breakout
+* add more hidden feautures
 
 ## HOW TO PLAY:
 * To select a difficulty, use the mouse on the options,
