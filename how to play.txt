@@ -18,6 +18,5 @@ there is an error in which the paddle overrides the ball or the ball
 overrides the paddle. Resetting the paddle and ball to their initial values
 fixes this bug.
 
-Note: the mouse cursor will be trapped in the screen if you attempt to move
-it out the left and right sides of the window. Moving it out of the window
-via the top or bottom will free the mouse.
+To free the cursor, move it out via the top or bottom of the window. The cursor will be sent back to the middle of the window on
+an attempt to move it out of frame via the left or right sides.
