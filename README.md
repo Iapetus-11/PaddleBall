@@ -1,9 +1,9 @@
 # PaddleBall
 PaddleBall is a game by Olim One Studios written in Java.
-* The game is text based.
-* Has mouse and keyboard controls.
+* The game is text based and designed to look like it's in a console or cmd window.
+* Has both mouse and keyboard controls.
 * Uses JFrame and JTextArea.
-* All 'graphics' are done via string manipulation.
+* All 'graphics' are done via string manipulation between 3 strings.
 
 ## TODO:
 * ~~add back to menu button/option~~
