@@ -9,10 +9,8 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Cursor;
 import java.awt.image.BufferedImage;
@@ -25,11 +23,13 @@ import java.lang.Math;
 import java.awt.AWTException;
 
 public class pongMain{
+   public static String ver = "v2.2"; /*did some bug fixes, added back to menu option (press 'm' key), updated "how to play.txt",
+                                       added more comments labeling/describing stuff, removed some unecessary code.*/
    public static JTextArea textField = new JTextArea();
-   public static JFrame jframe = new JFrame("PaddleBall by Olim One Studios | Score: 0");
+   public static JFrame jframe = new JFrame("PaddleBall "+"v0.0"+" | Score: 0");
    public static char bg = ' ';
    public static char c = '#';
-   public static String chr = ""+c+c+c+c+c+c+c+c+c+c+c+c;//12
+   public static String chr = ""+c+c+c+c+c+c+c+c+c+c+c+c;//12 of c
    public static String ball = "O";
    public static char newLine = '\n';
    public static boolean lock = false;
@@ -38,7 +38,7 @@ public class pongMain{
    public static int minSpeed = 0;
    public static int maxSpeed = 0;
    public static int pen = 2;
-   //secret color mode stuff
+   //secret color mode stuff (shhhhhhhhh)
    public static boolean colourz = false;
    public static Color red = new Color(255, 0, 0);
    public static Color orange = new Color(255, 165, 0);
@@ -49,26 +49,35 @@ public class pongMain{
    public static Color violet = new Color(128, 0, 128);
    public static Color[] colors = new Color[7];
    public static int cAt = 0;
+   //other stuff
    public static int mousePosX = 0;
    public static int mousePosXPrev = 0;
    public static int paddlePos = 0;
    public static Point winMid = new Point(0, 0);
    public static String diff = "";
-      
+   
    public static void main(String[] args){
-      System.out.println("main");
-      try{initDisp();}catch(IOException e){}
-      menu();
+      //while (true) loop allows for back to menu feauture (if exit is called it will use System.exit() the only reason
+      //this would run multiple times is if 'm' is pressed.)
+      while (true){
+         System.out.println("main");
+         try{initDisp();}
+         catch(IOException e){} //init display (setup jframe and jtextfield and some other stuff)
+         menu(); //do menu (difficulty options) and stuff
+         utils.sleep(500);
+      }
    }
    
    public static void exit(){
       System.out.println("exit");
       lock = true;
       utils.sleep(750);
+      //make sure everything is exited (1 System.exit(0) sometimes doesn't work properly for some reason)
       System.exit(0);
       System.exit(0);
    }
    
+   //get icon from jar file
    public BufferedImage getImg(String file) throws Exception{
       return ImageIO.read(this.getClass().getResource(file));
    }
@@ -76,53 +85,59 @@ public class pongMain{
    //setup window and textarea
    public static void initDisp()throws IOException{
       System.out.println("initDisp");
-      //File image = new File("icon.png");
-      //Image winIcon = ImageIO.read(image);
+      /* Old image fetching code
+      File image = new File("icon.png");
+      Image winIcon = ImageIO.read(image);
+      */
       Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-      Color white = new Color(230, 230, 230);
       textField.setSelectionColor(Color.BLACK);
       textField.setSelectedTextColor(Color.WHITE);
       textField.setBackground(Color.BLACK);
       textField.setForeground(Color.WHITE);
-      textField.addKeyListener(new MKeyListener());
+      textField.addKeyListener(new MKeyListener()); //add key listener
       textField.setEditable(false);
       textField.setFont(font);
-      jframe.add(textField);
+      jframe.add(textField); //add textField to jframe
       Dimension minSize = new Dimension(63+465*1, 45+312*1);
+      jframe.setTitle("PaddleBall "+ver+" | Score: 0");
       jframe.setSize(63+465*1, 45+312*1);
       jframe.setMinimumSize(minSize);
       jframe.setVisible(true);
       jframe.setBackground(Color.BLACK);
       jframe.setAlwaysOnTop(false);
-      try{jframe.setIconImage(new pongMain().getImg("icon.png"));}catch(Exception e){}
+      try{jframe.setIconImage(new pongMain().getImg("icon.png"));}
+      catch(Exception e){} //call method to get & set window icon
       jframe.setCursor(Cursor.DEFAULT_CURSOR);
       jframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-      textField.addMouseMotionListener(new MouseMovement());
-      textField.addMouseListener(new MouseMovement());
-      jframe.addWindowListener(new WindowAdapter() {
-         @Override
-         public void windowClosing(WindowEvent event) {
-            jframe.dispose();
-            exit();
+      textField.addMouseMotionListener(new MouseMovement()); //mouse movement listener (moving, dragging)
+      textField.addMouseListener(new MouseMovement()); //mouse listener (click, buttons)
+      //catch window closing event, call JFrame.dispose() and exit()
+      jframe.addWindowListener(
+         new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent event){
+               jframe.dispose();
+               exit();
+            }
          }
-      });
+         );
    }
    
    public static void menu(){
       System.out.println("menu");
       inMenu = true;
-      BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-      Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
+      BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB); //make blank cursor
+      Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor"); //make blank cursor
       Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14*1);
       Font font2 = new Font(Font.MONOSPACED, Font.PLAIN, 18*1);
       textField.setFont(font2);
       String welcome = "\n    PaddleBall - an Olim One Studios game\n\n\n             Select Difficulty:\n\n        1. Can I play, Daddy?\n        2. It's paddle breaking time!";
-      textField.setText(welcome);
+      textField.setText(welcome); //set jtextarea to the menu string
       while(inMenu){utils.sleep(1);}
       textField.setFont(font);
       String display = "";
-      jframe.setCursor(blankCursor);
-      initGrid(display);
+      jframe.setCursor(blankCursor); //set cursor to blank cursor
+      initGrid(display); //setup 'grid' for game
       lock = false;
       moveBall();
    }
@@ -150,21 +165,23 @@ public class pongMain{
       bg = pongMain.bg;
       display = "";
       while (i!=1088-pongMain.chr.length()){
-         if (i==792+64*2+1){
+         if (i==792+64*2+1){ //place paddle
             display+=pongMain.chr;
             i++;
-         }else if (i==64+31){
+         }else if (i==64+31){ //place ball
             display+=ball;
             i++;
-         }else{
+         }else{ //place background char
             display+=bg;
             i++;
          }
       }
       draw(display);
-      return display;
+      return display; //remenants of old code, will stay for now just in case
    }
    
+   //'draws' string to jtextarea
+   //splits up string, adds \n to end of each line, then sends it to jtextarea
    public static void draw(String display){
       System.out.println("draw");
       int i = 0;
@@ -183,6 +200,7 @@ public class pongMain{
       pongMain.textField.setText(display);
    }
    
+   //move paddle back and forth with keyboard
    public static void moveChr(int x, int y){
       System.out.println("moveChr");
       while (lock){utils.sleep(1);}
@@ -192,6 +210,7 @@ public class pongMain{
       String disp1;
       String disp2;
       
+      //probably could use For loops for left & right to shrink code
       //right
       if (x>1){
          if (pos<=957&&pos!=-1){
@@ -276,6 +295,7 @@ public class pongMain{
       lock = false;
    }
    
+   //move paddle with mouse
    public static void moveChr2(int x){
       System.out.println("moveChr2");
       while (lock){utils.sleep(1);}
@@ -313,6 +333,7 @@ public class pongMain{
       lock = false;
    }
    
+   //reset paddle location and ball position, can reset score
    public static void reset(int s){
       System.out.println("reset");
       lock = true;
@@ -320,7 +341,7 @@ public class pongMain{
       initGrid(display);
       score = s;
       textField.setForeground(Color.WHITE);
-      jframe.setTitle("PaddleBall by Olim One Studios | Score: "+score+" | Difficulty: "+diff);
+      jframe.setTitle("PaddleBall "+ver+" | Score: "+score+" | Difficulty: "+diff);
       System.out.println("#### RESET ####");
       try{
          Robot robo = new Robot();
@@ -330,6 +351,8 @@ public class pongMain{
       lock = false;
    }
    
+   //main game loop
+   //moves ball, checks for errors, etc...
    public static void moveBall(){
       System.out.println("moveBall");
       JTextArea textField = pongMain.textField;
@@ -344,9 +367,17 @@ public class pongMain{
       int speed = 125;
       //ball movement
       while (true){
+         if (inMenu){
+            return;
+         }
          //System.out.println(paddlePos);
          utils.sleep(speed);
-         while (lock){utils.sleep(1);}
+         while (lock){
+            utils.sleep(1);
+            if (inMenu){
+               return;
+            }
+         }
          lock = true;
          if (colourz){doColourz();}
          display = textField.getText();
@@ -367,7 +398,23 @@ public class pongMain{
          }
          
             //1st right
-            if (headingX>0){
+         if (headingX>0){
+            if (display.charAt(pos+1)!=newLine){
+               disp1 = display.substring(0, pos);
+               disp2 = display.substring(pos+pongMain.ball.length());
+               display = disp1+pongMain.bg+disp2;
+               disp1 = display.substring(0, pos+1);
+               disp2 = display.substring(pos+2);
+               display = disp1+ball+disp2;
+               pos++;
+            }else{
+               headingX = (int)(Math.random()*2+1)*-1;
+            }
+         }
+            
+            //2nd right
+         if (headingX>0){
+            if (Math.abs(headingX)>1){
                if (display.charAt(pos+1)!=newLine){
                   disp1 = display.substring(0, pos);
                   disp2 = display.substring(pos+pongMain.ball.length());
@@ -380,23 +427,7 @@ public class pongMain{
                   headingX = (int)(Math.random()*2+1)*-1;
                }
             }
-            
-            //2nd right
-            if (headingX>0){
-               if (Math.abs(headingX)>1){
-                  if (display.charAt(pos+1)!=newLine){
-                     disp1 = display.substring(0, pos);
-                     disp2 = display.substring(pos+pongMain.ball.length());
-                     display = disp1+pongMain.bg+disp2;
-                     disp1 = display.substring(0, pos+1);
-                     disp2 = display.substring(pos+2);
-                     display = disp1+ball+disp2;
-                     pos++;
-                  }else{
-                     headingX = (int)(Math.random()*2+1)*-1;
-                  }
-               }
-            }
+         }
          
          //1st left
          if (headingX<0){
@@ -446,7 +477,7 @@ public class pongMain{
                   headingX = ((int)(Math.random()*5)-2);
                   if (headingX==0){headingX=((int)(Math.random()*5)-2);}
                   score++;
-                  jframe.setTitle("PaddleBall by Olim One Studios | Score: "+score+" | Difficulty: "+diff);
+                  jframe.setTitle("PaddleBall "+ver+" | Score: "+score+" | Difficulty: "+diff);
                   speed = (int)(Math.random()*(maxSpeed-minSpeed+1)+minSpeed);
                   if (Math.abs(headingX)>1){
                      speed+=15;
@@ -461,7 +492,7 @@ public class pongMain{
                   speed+=15;
                }
                score-=pen;
-               jframe.setTitle("PaddleBall by Olim One Studios | Score: "+score+" | Difficulty: "+diff);
+               jframe.setTitle("PaddleBall "+ver+" | Score: "+score+" | Difficulty: "+diff);
             }
          }
          
@@ -490,6 +521,7 @@ public class pongMain{
    }
 }
  
+//key listener
 class MKeyListener extends KeyAdapter{
    @Override
    public void keyPressed(KeyEvent event){
@@ -498,7 +530,7 @@ class MKeyListener extends KeyAdapter{
       //Print out key System.out.println(event.getKeyChar());
       
       if (event.getKeyCode() == KeyEvent.VK_HOME){
-      System.out.println("Key codes: " + event.getKeyCode());
+         System.out.println("Key codes: " + event.getKeyCode());
       }
       
       //detect movement keys
@@ -512,33 +544,37 @@ class MKeyListener extends KeyAdapter{
          }
       }
       
+      //difficulty option 1
       if (event.getKeyChar()=='1'&&pongMain.inMenu){
          pongMain.maxSpeed = 150;
          pongMain.minSpeed = 100;
          pongMain.inMenu = false;
          pongMain.pen = 2;
          pongMain.diff = "Easy";
-         pongMain.jframe.setTitle("PaddleBall by Olim One Studios | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
+         pongMain.jframe.setTitle("PaddleBall "+pongMain.ver+" | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
       }
       
+      //difficulty option 2
       if (event.getKeyChar()=='2'&&pongMain.inMenu){
          pongMain.maxSpeed = 60;
          pongMain.minSpeed = 40;
          pongMain.inMenu = false;
          pongMain.pen = 3;
          pongMain.diff = "Medium";
-         pongMain.jframe.setTitle("PaddleBall by Olim One Studios | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
+         pongMain.jframe.setTitle("PaddleBall "+pongMain.ver+" | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
       }
       
+      //super secret difficulty option 3
       if (event.getKeyChar()=='0'&&pongMain.inMenu){
          pongMain.maxSpeed = 30;
          pongMain.minSpeed = 25;
          pongMain.inMenu = false;
          pongMain.pen = 5;
          pongMain.diff = "Ultra";
-         pongMain.jframe.setTitle("PaddleBall by Olim One Studios | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
+         pongMain.jframe.setTitle("PaddleBall "+pongMain.ver+" | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
       }
       
+      //reset key
       if (event.getKeyChar()=='r'){
          if (!pongMain.inMenu){
             utils.sleep(100);
@@ -546,10 +582,29 @@ class MKeyListener extends KeyAdapter{
          }
       }
       
+      //exit key
       if (event.getKeyChar()=='z'){
          pongMain.exit();
       }
       
+      //back to menu key
+      if (event.getKeyChar()=='m'){
+         if (!pongMain.inMenu){
+            //stop
+            while (pongMain.lock){utils.sleep(1);}
+            pongMain.lock = true;
+            utils.sleep(750);
+            pongMain.jframe.dispose(); //get rid of jframe and jtextfield
+            //reset vars
+            pongMain.jframe = new JFrame("PaddleBall "+"v0.0"+" | Score: 0"); //redo textField
+            pongMain.textField = new JTextArea(); //redo jframe
+            pongMain.score = 0; //reset score
+            pongMain.colourz = false; //reset color option
+            pongMain.inMenu = true;
+         }
+      }
+      
+      //secret color mode key
       if (event.getKeyChar()=='c'){
          pongMain.colourz = !pongMain.colourz;
          if (pongMain.colourz==false){
@@ -559,6 +614,7 @@ class MKeyListener extends KeyAdapter{
    }
 }
 
+//mouse listener
 class MouseMovement extends MouseInputAdapter{
    public static int move = 0;
    @Override
@@ -576,7 +632,9 @@ class MouseMovement extends MouseInputAdapter{
                robo.mouseMove((int)pongMain.winMid.getX()+(int)((63+465*1)/2), (int)pongMain.winMid.getY()+(int)((45+312*1)/2));
             }catch(AWTException e2){e2.printStackTrace();}
          }
-         if (pongMain.mousePosX>pongMain.mousePosXPrev-1){move=1;}else if (pongMain.mousePosX<pongMain.mousePosXPrev+1){move=-1;}else{move=0;}
+         if (pongMain.mousePosX>pongMain.mousePosXPrev-1){move=1;}
+         else if (pongMain.mousePosX<pongMain.mousePosXPrev+1){move=-1;}
+         else{move=0;}
          pongMain.moveChr2(move);
       }
       pongMain.mousePosXPrev = pongMain.mousePosX;
@@ -594,7 +652,7 @@ class MouseMovement extends MouseInputAdapter{
             pongMain.inMenu = false;
             pongMain.pen = 2;
             pongMain.diff = "Easy";
-            pongMain.jframe.setTitle("PaddleBall by Olim One Studios | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
+            pongMain.jframe.setTitle("PaddleBall "+pongMain.ver+" | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
             System.out.println("Difficulty: "+pongMain.diff);
          }
          
@@ -605,7 +663,7 @@ class MouseMovement extends MouseInputAdapter{
             pongMain.inMenu = false;
             pongMain.pen = 3;
             pongMain.diff = "Medium";
-            pongMain.jframe.setTitle("PaddleBall by Olim One Studios | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
+            pongMain.jframe.setTitle("PaddleBall "+pongMain.ver+" | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
             System.out.println("Difficulty: "+pongMain.diff);
          }
          
@@ -616,15 +674,17 @@ class MouseMovement extends MouseInputAdapter{
             pongMain.inMenu = false;
             pongMain.pen = 5;
             pongMain.diff = "Ultra";
-            pongMain.jframe.setTitle("PaddleBall by Olim One Studios | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
+            pongMain.jframe.setTitle("PaddleBall "+pongMain.ver+" | Score: "+pongMain.score+" | Difficulty: "+pongMain.diff);
             System.out.println("Difficulty: "+pongMain.diff);
          }
       }
    }
 }
 
+//basically only needed for sleep bc yeah don't question it.
 class utils{
    public static void sleep(int time){
-      try{Thread.sleep(time);}catch(InterruptedException ie){}
+      try{Thread.sleep(time);}
+      catch(InterruptedException ie){}
    }
 }
