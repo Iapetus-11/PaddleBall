@@ -21,10 +21,16 @@ move the mouse side to side while in the window.
 * To reset the game, use the 'r' key. Resetting the game will reposition
 the paddle and ball, and reset the score.
 
+* To go back to the main menu, use the 'm' key. This will reset the score
+and allow you to change the difficulty.
+
 * To exit, either click on the red X in the top right of the screen,
 or press the 'z' key.
 
-* The paddle may be repositioned throughout the game, sometimes the paddle overrides the ball so the position of
-the ball and paddle are reset when this happens to prevent errors.
+* You may notice the paddle is repositioned throughout the game, sometimes
+there is an error in which the paddle overrides the ball or the ball
+overrides the paddle. Resetting the paddle and ball to their initial values
+fixes this bug.
 
-* Moving the window while in-game may mess up the mouse controls.
+* To free the cursor, move it out via the top or bottom of the window. The cursor will be sent back to the middle of the window on
+an attempt to move it out of frame via the left or right sides.
