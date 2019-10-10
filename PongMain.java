@@ -1,9 +1,7 @@
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.JFrame;
@@ -19,16 +17,15 @@ import java.awt.Robot;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.lang.Math;
 import java.awt.AWTException;
 
 public class PongMain{
-   public static String ver = "v2.4"; /* changed brightness of certain colors to increase visibility of ball */
+   public static String ver = "v2.5"; /* minor code changes, removed some now unused imports, fixed some warnings */
    public static JTextArea textField = new JTextArea();
    public static JFrame jframe = new JFrame("PaddleBall "+ver+" | Score: 0");
    public static char bg = ' '; //background character
    public static char c = '#'; //paddle character
-   public static String chr = ""+c+c+c+c+c+c+c+c+c+c+c+c;//12 of c
+   public static String chr = ""+c+c+c+c+c+c+c+c+c+c+c+c; //12 of c
    public static String ball = "O";
    public static char newLine = '\n';
    public static boolean lock = false;
@@ -38,7 +35,7 @@ public class PongMain{
    public static int maxSpeed = 0; //max speed for ball
    public static int pen = 2; //ball hitting floor penalty
    //secret color mode stuff (shhhhhhhhh)
-   public static boolean colourz = false;
+   public static boolean colourz = false; //whether or not to do colors
    public static Color red = new Color(255, 0, 0);
    public static Color orange = new Color(255, 165, 0);
    public static Color yellow = new Color(255, 255, 0);
@@ -47,7 +44,7 @@ public class PongMain{
    public static Color indigo = new Color(120, 0, 175);
    public static Color violet = new Color(200, 0, 200);
    public static Color[] colors = new Color[7];
-   public static int cAt = 0;
+   public static int cAt = 0; //color At
    //other stuff
    public static int mousePosX = 0; //mouse position on x axis
    public static int mousePosXPrev = 0; //previous mouse position on x axis
@@ -60,17 +57,17 @@ public class PongMain{
       //this would run multiple times is if 'm' is pressed.)
       while (true){
          System.out.println("main");
-         try{initDisp();}
-         catch(IOException e){} //init display (setup jframe and jtextfield and some other stuff)
+         try{initDisp();} //init display (setup jframe and jtextfield and some other stuff)
+         catch(IOException e){} 
          menu(); //do menu (difficulty options) and stuff
-         utils.sleep(500);
+         Utils.sleep(500);
       }
    }
    
    public static void exit(){
       System.out.println("exit");
       lock = true;
-      utils.sleep(750);
+      Utils.sleep(750);
       //make sure everything is exited (1 System.exit(0) sometimes doesn't work properly for some reason)
       System.exit(0);
       System.exit(0);
@@ -121,6 +118,7 @@ public class PongMain{
    public static void menu(){
       System.out.println("menu");
       inMenu = true;
+      textField.setForeground(Color.WHITE);
       BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB); //make blank cursor
       Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor"); //make blank cursor
       Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14*1);
@@ -128,7 +126,7 @@ public class PongMain{
       textField.setFont(font2);
       String welcome = "\n    PaddleBall - an Olim One Studios game\n\n\n             Select Difficulty:\n\n        1. Can I play, Daddy?\n        2. It's paddle breaking time!";
       textField.setText(welcome); //set jtextarea to the menu string
-      while(inMenu){utils.sleep(1);}
+      while(inMenu){Utils.sleep(1);}
       textField.setFont(font);
       String display = "";
       jframe.setCursor(blankCursor); //set cursor to blank cursor
@@ -198,7 +196,7 @@ public class PongMain{
    //move paddle back and forth with keyboard
    public static void moveChr(int x, int y){
       System.out.println("moveChr");
-      while (lock){utils.sleep(1);}
+      while (lock){Utils.sleep(1);}
       lock = true;
       String display = PongMain.textField.getText();
       int pos = display.indexOf(chr);
@@ -311,7 +309,7 @@ public class PongMain{
    //move paddle with mouse
    public static void moveChr2(int x){
       System.out.println("moveChr2");
-      while (lock){utils.sleep(1);}
+      while (lock){Utils.sleep(1);}
       lock = true;
       String display = PongMain.textField.getText();
       int pos = display.indexOf(chr);
@@ -353,13 +351,17 @@ public class PongMain{
       String display = "";
       initGrid(display);
       score = s;
-      textField.setForeground(Color.WHITE);
+      if (diff.equals("Easy")){
+         textField.setForeground(Color.PINK);
+      }else{
+         textField.setForeground(Color.WHITE);
+      }
       jframe.setTitle("PaddleBall "+ver+" | Score: "+score+" | Difficulty: "+diff);
       System.out.println("#### RESET ####");
       try{
          Robot robo = new Robot();
          winMid = textField.getLocationOnScreen();
-         robo.mouseMove((int)PongMain.winMid.getX()+(int)((63+465*1)/2), (int)PongMain.winMid.getY()+(int)((45+312*1)/2));
+         robo.mouseMove((int)PongMain.winMid.getX()+((63+465*1)/2), (int)PongMain.winMid.getY()+((45+312*1)/2));
       }catch(AWTException e2){e2.printStackTrace();}
       lock = false;
    }
@@ -376,17 +378,18 @@ public class PongMain{
       int i = 0;
       String disp1;
       String disp2;
-      utils.sleep(1000);
+      Utils.sleep(1000);
       int speed = 125;
       //ball movement
       while (true){
+         System.out.println("moveBall");
          if (inMenu){
             return;
          }
          //System.out.println(paddlePos);
-         utils.sleep(speed);
+         Utils.sleep(speed);
          while (lock){
-            utils.sleep(1);
+            Utils.sleep(1);
             if (inMenu){
                return;
             }
@@ -400,7 +403,7 @@ public class PongMain{
          if (pos==-1||display.indexOf(chr)==-1){
             if (!PongMain.inMenu){
                reset(score);
-               utils.sleep(1000);
+               Utils.sleep(1000);
                display = textField.getText();
                pos = display.indexOf(ball);
                i = 0;
@@ -559,6 +562,7 @@ class MKeyListener extends KeyAdapter{
          PongMain.pen = 2;
          PongMain.diff = "Easy";
          PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
+         PongMain.textField.setForeground(Color.PINK);
       }
       
       //difficulty option 2
@@ -584,7 +588,7 @@ class MKeyListener extends KeyAdapter{
       //reset key, resets score to 0 and paddle and ball position
       if (event.getKeyChar()=='r'){
          if (!PongMain.inMenu){
-            utils.sleep(100);
+            Utils.sleep(100);
             PongMain.reset(0);
          }
       }
@@ -598,9 +602,9 @@ class MKeyListener extends KeyAdapter{
       if (event.getKeyChar()=='m'){
          if (!PongMain.inMenu){
             //stop
-            while (PongMain.lock){utils.sleep(1);}
+            while (PongMain.lock){Utils.sleep(1);}
             PongMain.lock = true;
-            utils.sleep(750);
+            Utils.sleep(750);
             PongMain.jframe.dispose(); //get rid of jframe and jtextfield
             //reset vars
             PongMain.jframe = new JFrame("PaddleBall "+"v0.0"+" | Score: 0"); //redo textField
@@ -613,9 +617,11 @@ class MKeyListener extends KeyAdapter{
       
       //secret color mode key (shhhhhh)
       if (event.getKeyChar()=='c'){
-         PongMain.colourz = !PongMain.colourz;
-         if (PongMain.colourz==false){
-            PongMain.textField.setForeground(Color.WHITE);
+         if (!PongMain.diff.equals("Easy")){
+            PongMain.colourz = !PongMain.colourz;
+            if (PongMain.colourz==false){
+               PongMain.textField.setForeground(Color.WHITE);
+            }
          }
       }
    }
@@ -629,14 +635,14 @@ class MouseMovement extends MouseInputAdapter{
       System.out.println("mouseMoved");
       PongMain.mousePosX = e.getX();
       if (!PongMain.inMenu){
-         while(PongMain.lock){utils.sleep(1);}
+         while(PongMain.lock){Utils.sleep(1);}
          if (PongMain.mousePosX>500||PongMain.mousePosX<11){ //check to see if mouse is close to the edge of window
             try{
                PongMain.winMid = PongMain.textField.getLocationOnScreen();
                Robot robo = new Robot();
                //middle of window
                PongMain.winMid = PongMain.textField.getLocationOnScreen();
-               robo.mouseMove((int)PongMain.winMid.getX()+(int)((63+465*1)/2), (int)PongMain.winMid.getY()+(int)((45+312*1)/2)); //move mouse back to screen center
+               robo.mouseMove((int)PongMain.winMid.getX()+((63+465*1)/2), (int)PongMain.winMid.getY()+((45+312*1)/2)); //move mouse back to screen center
             }catch(AWTException e2){e2.printStackTrace();}
          }
          if (PongMain.mousePosX>PongMain.mousePosXPrev-1){move=1;}
@@ -652,7 +658,7 @@ class MouseMovement extends MouseInputAdapter{
       if (PongMain.inMenu){
          int mPointX = e.getX();
          int mPointY = e.getY();
-         //option one (easy)
+         //option one (easy difficulty)
          if (mPointX>=85&&mPointX<=319&&mPointY>=151&&mPointY<=174){
             PongMain.maxSpeed = 150;
             PongMain.minSpeed = 100;
@@ -661,9 +667,10 @@ class MouseMovement extends MouseInputAdapter{
             PongMain.diff = "Easy";
             PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
             System.out.println("Difficulty: "+PongMain.diff);
+            PongMain.textField.setForeground(Color.PINK);
          }
          
-         //option 2 (medium)
+         //option 2 (medium difficulty)
          if (mPointX>=85&&mPointX<=408&&mPointY>=179&&mPointY<=200){
             PongMain.maxSpeed = 60;
             PongMain.minSpeed = 40;
@@ -674,7 +681,7 @@ class MouseMovement extends MouseInputAdapter{
             System.out.println("Difficulty: "+PongMain.diff);
          }
          
-         //hidden option 3 (ultra)
+         //hidden option 3 (ultra difficulty)
          if (mPointX>=217&&mPointX<=265&&mPointY>=30&&mPointY<=47){
             PongMain.maxSpeed = 30;
             PongMain.minSpeed = 25;
@@ -688,7 +695,7 @@ class MouseMovement extends MouseInputAdapter{
    }
 }
 
-class utils{
+class Utils{
    public static void sleep(int time){ //sleep n milliseconds
       try{Thread.sleep(time);}
       catch(InterruptedException ie){}

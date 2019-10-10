@@ -1,5 +1,5 @@
-To select a difficulty, use the mouse on the options,
-or press the '1' or '2' key to select that difficulty.
+To select a difficulty, use the mouse on the options, or press the '1'
+or '2' key to select that difficulty.
 
 To move the paddle back and forth, use the 'a' and 'd' keys or
 move the mouse side to side while in the window.
@@ -15,8 +15,9 @@ or press the 'z' key.
 
 You may notice the paddle is repositioned throughout the game, sometimes
 there is an error in which the paddle overrides the ball or the ball
-overrides the paddle. Resetting the paddle and ball to their initial values
-fixes this bug.
+overrides the paddle. Resetting the paddle and ball to their initial
+value fixes this bug.
 
-To free the cursor, move it out via the top or bottom of the window. The cursor will be sent back to the middle of the window on
-an attempt to move it out of frame via the left or right sides.
+To free the cursor, move it out via the top or bottom of the window. The 
+cursor will be sent back to the middle of the window on an attempt to 
+move it out of frame via the left or right sides.
