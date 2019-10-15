@@ -112,7 +112,7 @@ public class PongMain{
                exit();
             }
          }
-         );
+      );
    }
    
    public static void menu(){
@@ -526,8 +526,20 @@ public class PongMain{
             }
          }
          
-         if (pos<64){
+         if (pos<64){ //if pos is near top
             headingY = -1;
+            int prevHeadingX = headingX;
+            headingX = ((int)(Math.random()*5)-2);
+            if (headingX==0){headingX=((int)(Math.random()*5-2));}
+            if (headingX==0){headingX=((int)(Math.random()*5-2));}
+            if (prevHeadingX>0){
+               headingX = Math.abs(headingX);
+            }else if (prevHeadingX<0){
+               headingX = Math.abs(headingX)*-1;
+            }
+            if (Math.abs(headingX)>1){
+               speed+=15;
+            }
          }
          
          //draw it
