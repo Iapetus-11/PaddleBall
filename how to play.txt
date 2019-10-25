@@ -21,3 +21,5 @@ value fixes this bug.
 To free the cursor, move it out via the top or bottom of the window. The 
 cursor will be sent back to the middle of the window on an attempt to 
 move it out of frame via the left or right sides.
+
+To pause and unpause the game, press the p button.

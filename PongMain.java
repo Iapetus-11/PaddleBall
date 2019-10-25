@@ -20,7 +20,9 @@ import java.awt.Font;
 import java.awt.AWTException;
 
 public class PongMain{
-   public static String ver = "v2.5"; /* minor code changes, removed some now unused imports, fixed some warnings */
+   public static String ver = "v3.1"; /* Paddle collision changes (direction changed based on where ball hits paddle),
+                                         new pause button, shrunk paddle movement code, fixed JFrame.setCursor(int) deprecation
+                                         warning, started working on code for breakout stuff, did some more minor bug fixes*/
    public static JTextArea textField = new JTextArea();
    public static JFrame jframe = new JFrame("PaddleBall "+ver+" | Score: 0");
    public static char bg = ' '; //background character
@@ -29,6 +31,7 @@ public class PongMain{
    public static String ball = "O";
    public static char newLine = '\n';
    public static boolean lock = false;
+   public static boolean locked = false; //for longer locks
    public static int score = 0;
    public static boolean inMenu = true;
    public static int minSpeed = 0; //min speed for ball
@@ -99,7 +102,7 @@ public class PongMain{
       jframe.setAlwaysOnTop(false);
       try{jframe.setIconImage(new PongMain().getImg("icon.png"));}
       catch(Exception e){} //call method to get & set window icon
-      jframe.setCursor(Cursor.DEFAULT_CURSOR);
+      jframe.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       jframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       textField.addMouseMotionListener(new MouseMovement()); //mouse movement listener (moving, dragging)
       textField.addMouseListener(new MouseMovement()); //mouse listener (click, buttons)
@@ -170,10 +173,10 @@ public class PongMain{
          }
       }
       draw(display);
-      return display; //remenants of old code, will stay for now just in case
+      return display;
    }
    
-   //'draws' string to jtextarea
+   //'draws' string to the jtextarea
    //splits up string, adds \n to end of each line, then sends it to jtextarea
    public static void draw(String display){
       System.out.println("draw");
@@ -193,6 +196,17 @@ public class PongMain{
       PongMain.textField.setText(display);
    }
    
+   /*
+   //generate obstacles based on given pattern
+   public static genObss(String pattern){
+      //generate obstacles 
+   }
+   
+   //generate random sized obstacle based on position p in string
+   public static genObss(int p){
+   
+   }*/
+   
    //move paddle back and forth with keyboard
    public static void moveChr(int x, int y){
       System.out.println("moveChr");
@@ -204,103 +218,35 @@ public class PongMain{
       String disp2;
       int i = 0;
       
-      //probably could use For loops for left & right to shrink code
       //right
       if (x>1){
-         if (pos<=957&&pos!=-1){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos+5);
-            disp2 = display.substring(pos+8);
-            display = disp1+chr+disp2;
-         }else if (pos==958&&pos!=-1){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos+4);
-            disp2 = display.substring(pos+7);
-            display = disp1+chr+disp2;
-         }else if (pos==959&&pos!=-1){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos+3);
-            disp2 = display.substring(pos+6);
-            display = disp1+chr+disp2;
-         }else if (pos==960&&pos!=-1){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos+2);
-            disp2 = display.substring(pos+5);
-            display = disp1+chr+disp2;
-         }else if (pos==961&&pos!=-1){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos+1);
-            disp2 = display.substring(pos+4);
-            display = disp1+chr+disp2;
-         }
-      }
-      
-      /* new movement code, work in progress
-      //right
-      if (x>1){
-         i = 0;
-         while (i!=5){
-            i++;
-            if (display.charAt(pos+1)==' '&&pos!=-1){
+         for (int c = 0; c <= 5; c++){
+            if (pos!=-1 && display.charAt(pos+chr.length()+1+c)==bg && pos+1<963){
                disp1 = display.substring(0, pos);
                disp2 = display.substring(pos+PongMain.chr.length());
                display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
                disp1 = display.substring(0, pos+1);
                disp2 = display.substring(pos+4);
                display = disp1+chr+disp2;
+               pos++;
             }
          }
-      }*/
+      }
       
       //left
       if (x<0){
-         if (pos>=915){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos-5);
-            disp2 = display.substring(pos-2);
-            display = disp1+chr+disp2;
-         }else if (pos==914){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos-4);
-            disp2 = display.substring(pos-1);
-            display = disp1+chr+disp2;
-         }else if (pos==913){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos-3);
-            disp2 = display.substring(pos);
-            display = disp1+chr+disp2;
-         }else if (pos==912){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos-2);
-            disp2 = display.substring(pos+1);
-            display = disp1+chr+disp2;
-         }else if (pos==911){
-            disp1 = display.substring(0, pos);
-            disp2 = display.substring(pos+PongMain.chr.length());
-            display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
-            disp1 = display.substring(0, pos-1);
-            disp2 = display.substring(pos+2);
-            display = disp1+chr+disp2;
+         for (int c = 0; c<=5; c++){
+            if (pos!=-1 && display.charAt(pos-1)==bg && pos-1>909){   
+               disp1 = display.substring(0, pos);
+               disp2 = display.substring(pos+PongMain.chr.length());
+               display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
+               disp1 = display.substring(0, pos-1);
+               disp2 = display.substring(pos+2);
+               display = disp1+chr+disp2;
+               pos--;
+            }
          }
-      }
+      }      
       paddlePos = pos;
       PongMain.textField.setText(display);
       lock = false;
@@ -318,7 +264,7 @@ public class PongMain{
       
       //right
       if (x>0){
-         if (pos<962&&pos!=-1&&display.charAt(pos+1)!=newLine&&display.charAt(pos+1)!=ball.charAt(0)){
+         if (pos<962 && pos!=-1 && display.charAt(pos+1)!=newLine && display.charAt(pos+1)!=ball.charAt(0)){
             disp1 = display.substring(0, pos);
             disp2 = display.substring(pos+PongMain.chr.length());
             display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
@@ -330,7 +276,7 @@ public class PongMain{
       
       //left
       if (x<0){
-         if (pos>910&&pos!=-1&&display.charAt(pos-1)!=newLine&&display.charAt(pos-1)!=ball.charAt(0)){
+         if (pos>910 && pos!=-1 && display.charAt(pos-1)!=newLine && display.charAt(pos-1)!=ball.charAt(0)){
             disp1 = display.substring(0, pos);
             disp2 = display.substring(pos+PongMain.chr.length());
             display = disp1+PongMain.bg+PongMain.bg+PongMain.bg+disp2;
@@ -413,9 +359,10 @@ public class PongMain{
             }
          }
          
-            //1st right
-         if (headingX>0){
-            if (display.charAt(pos+1)!=newLine){
+         //right
+         i = 0;
+         while (headingX>0 && i<Math.abs(headingX)){
+           if (display.charAt(pos+1)!=newLine){
                disp1 = display.substring(0, pos);
                disp2 = display.substring(pos+PongMain.ball.length());
                display = disp1+PongMain.bg+disp2;
@@ -426,28 +373,13 @@ public class PongMain{
             }else{
                headingX = (int)(Math.random()*2+1)*-1;
             }
-         }
-            
-            //2nd right
-         if (headingX>0){
-            if (Math.abs(headingX)>1){
-               if (display.charAt(pos+1)!=newLine){
-                  disp1 = display.substring(0, pos);
-                  disp2 = display.substring(pos+PongMain.ball.length());
-                  display = disp1+PongMain.bg+disp2;
-                  disp1 = display.substring(0, pos+1);
-                  disp2 = display.substring(pos+2);
-                  display = disp1+ball+disp2;
-                  pos++;
-               }else{
-                  headingX = (int)(Math.random()*2+1)*-1;
-               }
-            }
+            i++;
          }
          
-         //1st left
-         if (headingX<0){
-            if (pos>0&&display.charAt(pos-1)!=newLine){
+         //left
+         i = 0;
+         while (headingX<0 && i<Math.abs(headingX)){
+            if (pos>0 && display.charAt(pos-1)!=newLine){
                disp1 = display.substring(0, pos);
                disp2 = display.substring(pos+PongMain.ball.length());
                display = disp1+PongMain.bg+disp2;
@@ -458,40 +390,28 @@ public class PongMain{
             }else{
                headingX = (int)(Math.random()*2+1);
             }
-         }
-         
-         //2nd left
-         if (headingX<0){
-            if (Math.abs(headingX)>1){
-               if (pos>0&&display.charAt(pos-1)!=newLine){
-                  disp1 = display.substring(0, pos);
-                  disp2 = display.substring(pos+PongMain.ball.length());
-                  display = disp1+PongMain.bg+disp2;
-                  disp1 = display.substring(0, pos-1);
-                  disp2 = display.substring(pos);
-                  display = disp1+ball+disp2;
-                  pos--;
-               }else{
-                  headingX = (int)(Math.random()*2+1);
-               }
-            }
+            i++;
          }
          
          //down
-         if (0>headingY){
+         if (headingY<0){
             if (pos<960){
-               c = PongMain.c;
-               if (display.charAt(pos+65)!=c&&display.charAt(pos+64+1)!=c){
+               if (display.charAt(pos+65)!=c){
                   disp1 = display.substring(0, pos);
                   disp2 = display.substring(pos+PongMain.ball.length());
                   display = disp1+PongMain.bg+disp2;
                   disp1 = display.substring(0, pos+65);
                   disp2 = display.substring(pos+66);
                   display = disp1+ball+disp2;
-               }else if (display.charAt(pos+64)==c||display.charAt(pos+64+1)==c){
+               }else if (display.charAt(pos+64+1)==c){
                   headingY = 1;
                   headingX = ((int)(Math.random()*5)-2);
                   if (headingX==0){headingX=((int)(Math.random()*5)-2);}
+                  if (pos+65>paddlePos+6+1){
+                     headingX = Math.abs(headingX);
+                  }else if (pos+65<paddlePos+6-1){
+                     headingX = Math.abs(headingX)*-1;
+                  }
                   score++;
                   jframe.setTitle("PaddleBall "+ver+" | Score: "+score+" | Difficulty: "+diff);
                   speed = (int)(Math.random()*(maxSpeed-minSpeed+1)+minSpeed);
@@ -499,7 +419,8 @@ public class PongMain{
                      speed+=15;
                   }
                }
-            }else if (pos>128){
+            }else if (pos>128){ //if ball is not at ceiling
+               speed = (int)(Math.random()*(maxSpeed-minSpeed+1)+minSpeed);
                headingY = 1;
                headingX = ((int)(Math.random()*5)-2);
                if (headingX==0){headingX=((int)(Math.random()*5-2));}
@@ -513,7 +434,7 @@ public class PongMain{
          }
          
          //up
-         if (0<headingY){
+         if (headingY>0){
             if (pos-64>0){
                if (display.charAt(pos-65)!='#'){
                   disp1 = display.substring(0, pos);
@@ -528,17 +449,19 @@ public class PongMain{
          
          if (pos<64){ //if pos is near top
             headingY = -1;
-            int prevHeadingX = headingX;
-            headingX = ((int)(Math.random()*5)-2);
-            if (headingX==0){headingX=((int)(Math.random()*5-2));}
-            if (headingX==0){headingX=((int)(Math.random()*5-2));}
-            if (prevHeadingX>0){
-               headingX = Math.abs(headingX);
-            }else if (prevHeadingX<0){
-               headingX = Math.abs(headingX)*-1;
-            }
             if (Math.abs(headingX)>1){
-               speed+=15;
+               int prevHeadingX = headingX;
+               do{
+                  headingX = ((int)(Math.random()*5)-2);
+               }while (headingX==0);
+               if (prevHeadingX>0){
+                  headingX = Math.abs(headingX);
+               }else if (prevHeadingX<0){
+                  headingX = Math.abs(headingX)*-1;
+               }
+               if (Math.abs(headingX)>1){
+                  speed+=15;
+               }
             }
          }
          
@@ -556,62 +479,91 @@ class MKeyListener extends KeyAdapter{
       System.out.println("keyPressed");
       
       //detect movement keys
-      if (!PongMain.inMenu){
-         if (event.getKeyChar()=='d'){
-            PongMain.moveChr(2, 0);
-         }
-      
-         if (event.getKeyChar()=='a'){
-            PongMain.moveChr(-2, 0);
-         }
-      }
-      
-      //difficulty option 1
-      if (event.getKeyChar()=='1'&&PongMain.inMenu){
-         PongMain.maxSpeed = 150;
-         PongMain.minSpeed = 100;
-         PongMain.inMenu = false;
-         PongMain.pen = 2;
-         PongMain.diff = "Easy";
-         PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
-         PongMain.textField.setForeground(Color.PINK);
-      }
-      
-      //difficulty option 2
-      if (event.getKeyChar()=='2'&&PongMain.inMenu){
-         PongMain.maxSpeed = 60;
-         PongMain.minSpeed = 40;
-         PongMain.inMenu = false;
-         PongMain.pen = 3;
-         PongMain.diff = "Medium";
-         PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
-      }
-      
-      //super secret difficulty option 3
-      if (event.getKeyChar()=='0'&&PongMain.inMenu){
-         PongMain.maxSpeed = 30;
-         PongMain.minSpeed = 25;
-         PongMain.inMenu = false;
-         PongMain.pen = 5;
-         PongMain.diff = "Ultra";
-         PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
-      }
-      
-      //reset key, resets score to 0 and paddle and ball position
-      if (event.getKeyChar()=='r'){
+      if (!PongMain.lock){
          if (!PongMain.inMenu){
-            Utils.sleep(100);
-            PongMain.reset(0);
+            if (event.getKeyChar()=='d'||event.getKeyChar()=='D'){
+               PongMain.moveChr(2, 0);
+            }
+         
+            if (event.getKeyChar()=='a'||event.getKeyChar()=='A'){
+               PongMain.moveChr(-2, 0);
+            }
+         }
+         
+         //difficulty option 1
+         if (event.getKeyChar()=='1' && PongMain.inMenu){
+            PongMain.maxSpeed = 150;
+            PongMain.minSpeed = 100;
+            PongMain.inMenu = false;
+            PongMain.pen = 2;
+            PongMain.diff = "Easy";
+            PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
+            PongMain.textField.setForeground(Color.PINK);
+         }
+         
+         //difficulty option 2
+         if (event.getKeyChar()=='2' && PongMain.inMenu){
+            PongMain.maxSpeed = 60;
+            PongMain.minSpeed = 40;
+            PongMain.inMenu = false;
+            PongMain.pen = 3;
+            PongMain.diff = "Medium";
+            PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
+         }
+         
+         //super secret difficulty option 3
+         if (event.getKeyChar()=='0' && PongMain.inMenu){
+            PongMain.maxSpeed = 30;
+            PongMain.minSpeed = 25;
+            PongMain.inMenu = false;
+            PongMain.pen = 5;
+            PongMain.diff = "Ultra";
+            PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
+         }
+         
+         //reset key, resets score to 0 and paddle and ball position
+         if (event.getKeyChar()=='r'||event.getKeyChar()=='R'){
+            if (!PongMain.inMenu){
+               Utils.sleep(100);
+               PongMain.reset(0);
+            }
+         }
+         
+         //secret color mode key (shhhhhh)
+         if (event.getKeyChar()=='c'||event.getKeyChar()=='C'){
+            if (!PongMain.diff.equals("Easy")){
+               PongMain.colourz = !PongMain.colourz;
+               if (PongMain.colourz==false){
+                  PongMain.textField.setForeground(Color.WHITE);
+               }
+            }
+         }
+      }
+      //pause key
+      if (event.getKeyChar()=='p'||event.getKeyChar()=='P'){
+         PongMain.lock = !PongMain.lock;
+         PongMain.locked = PongMain.lock;               
+         try{
+            PongMain.winMid = PongMain.textField.getLocationOnScreen();
+            Robot robo = new Robot();
+            //middle of window
+            PongMain.winMid = PongMain.textField.getLocationOnScreen();
+            robo.mouseMove((int)PongMain.winMid.getX()+((63+465*1)/2), (int)PongMain.winMid.getY()+((45+312*1)/2)); //move mouse back to screen center
+         }catch(AWTException e2){e2.printStackTrace();}
+         if (PongMain.lock){
+            PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff+" [PAUSED]");
+         }else{
+            PongMain.jframe.setTitle("PaddleBall "+PongMain.ver+" | Score: "+PongMain.score+" | Difficulty: "+PongMain.diff);
          }
       }
       
       //exit key
-      if (event.getKeyChar()=='z'){
+      if (event.getKeyChar()=='z'||event.getKeyChar()=='Z'){
          PongMain.exit();
       }
       
       //back to menu key
-      if (event.getKeyChar()=='m'){
+      if (event.getKeyChar()=='m'||event.getKeyChar()=='M'){
          if (!PongMain.inMenu){
             //stop
             while (PongMain.lock){Utils.sleep(1);}
@@ -626,16 +578,6 @@ class MKeyListener extends KeyAdapter{
             PongMain.inMenu = true;
          }
       }
-      
-      //secret color mode key (shhhhhh)
-      if (event.getKeyChar()=='c'){
-         if (!PongMain.diff.equals("Easy")){
-            PongMain.colourz = !PongMain.colourz;
-            if (PongMain.colourz==false){
-               PongMain.textField.setForeground(Color.WHITE);
-            }
-         }
-      }
    }
 }
 
@@ -645,24 +587,26 @@ class MouseMovement extends MouseInputAdapter{
    @Override
    public void mouseMoved(MouseEvent e){
       System.out.println("mouseMoved");
-      PongMain.mousePosX = e.getX();
-      if (!PongMain.inMenu){
-         while(PongMain.lock){Utils.sleep(1);}
-         if (PongMain.mousePosX>500||PongMain.mousePosX<11){ //check to see if mouse is close to the edge of window
-            try{
-               PongMain.winMid = PongMain.textField.getLocationOnScreen();
-               Robot robo = new Robot();
-               //middle of window
-               PongMain.winMid = PongMain.textField.getLocationOnScreen();
-               robo.mouseMove((int)PongMain.winMid.getX()+((63+465*1)/2), (int)PongMain.winMid.getY()+((45+312*1)/2)); //move mouse back to screen center
-            }catch(AWTException e2){e2.printStackTrace();}
+      if (!PongMain.locked){
+         PongMain.mousePosX = e.getX();
+         if (!PongMain.inMenu){
+            while(PongMain.lock){Utils.sleep(1);}
+            if (PongMain.mousePosX>500||PongMain.mousePosX<11){ //check to see if mouse is close to the edge of window
+               try{
+                  PongMain.winMid = PongMain.textField.getLocationOnScreen();
+                  Robot robo = new Robot();
+                  //middle of window
+                  PongMain.winMid = PongMain.textField.getLocationOnScreen();
+                  robo.mouseMove((int)PongMain.winMid.getX()+((63+465*1)/2), (int)PongMain.winMid.getY()+((45+312*1)/2)); //move mouse back to screen center
+               }catch(AWTException e2){e2.printStackTrace();}
+            }
+            if (PongMain.mousePosX>PongMain.mousePosXPrev-1){move=1;}
+            else if (PongMain.mousePosX<PongMain.mousePosXPrev+1){move=-1;}
+            else{move=0;}
+            PongMain.moveChr2(move);
          }
-         if (PongMain.mousePosX>PongMain.mousePosXPrev-1){move=1;}
-         else if (PongMain.mousePosX<PongMain.mousePosXPrev+1){move=-1;}
-         else{move=0;}
-         PongMain.moveChr2(move);
+         PongMain.mousePosXPrev = PongMain.mousePosX;
       }
-      PongMain.mousePosXPrev = PongMain.mousePosX;
    }
    
    public void mouseClicked(MouseEvent e){ //for menu options
@@ -671,7 +615,7 @@ class MouseMovement extends MouseInputAdapter{
          int mPointX = e.getX();
          int mPointY = e.getY();
          //option one (easy difficulty)
-         if (mPointX>=85&&mPointX<=319&&mPointY>=151&&mPointY<=174){
+         if (mPointX>=85 && mPointX<=319 && mPointY>=151 && mPointY<=174){
             PongMain.maxSpeed = 150;
             PongMain.minSpeed = 100;
             PongMain.inMenu = false;
@@ -683,7 +627,7 @@ class MouseMovement extends MouseInputAdapter{
          }
          
          //option 2 (medium difficulty)
-         if (mPointX>=85&&mPointX<=408&&mPointY>=179&&mPointY<=200){
+         if (mPointX>=85 && mPointX<=408 && mPointY>=179 && mPointY<=200){
             PongMain.maxSpeed = 60;
             PongMain.minSpeed = 40;
             PongMain.inMenu = false;
@@ -694,7 +638,7 @@ class MouseMovement extends MouseInputAdapter{
          }
          
          //hidden option 3 (ultra difficulty)
-         if (mPointX>=217&&mPointX<=265&&mPointY>=30&&mPointY<=47){
+         if (mPointX>=217 && mPointX<=265 && mPointY>=30 && mPointY<=47){
             PongMain.maxSpeed = 30;
             PongMain.minSpeed = 25;
             PongMain.inMenu = false;
